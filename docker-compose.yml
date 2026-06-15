@@ -1,0 +1,33 @@
+# ============================================================
+# IceFrame Inventory - Parte 1 (Estudiante 1: Aplicación)
+# Orquesta el contenedor de la app de inventario.
+#
+# Cumple la consigna:
+#   - Construye desde el Dockerfile propio del proyecto (build: .).
+#   - Lee la IP de la BD y las credenciales desde el archivo .env (env_file).
+#   - Expone el puerto 8000, accesible desde la red Tailscale.
+#   - La BD NO está aquí: corre en la máquina del Estudiante 2 y se alcanza
+#     por su IP Tailscale (DB_HOST/DB_PORT del .env).
+#
+# Uso:
+#   docker compose up -d --build   # levantar (reconstruye la imagen)
+#   docker compose logs -f          # ver logs
+#   docker compose down             # detener y eliminar el contenedor
+# ============================================================
+# Nombre del proyecto Compose (el grupo que muestra Docker Desktop).
+# Sin esto tomaría el nombre de la carpeta (app-inventario). Así se ve "iceframe".
+name: iceframe
+
+services:
+  app:
+    build: .
+    image: iceframe-laravel
+    container_name: iceframe-app
+    # Lee DB_HOST (IP Tailscale), credenciales y demás variables del .env.
+    env_file:
+      - .env
+    # Expuesto en la red Tailscale de la máquina anfitriona.
+    ports:
+      - "8000:8000"
+    # Reinicia salvo que se detenga manualmente (sobrevive reinicios del equipo).
+    restart: unless-stopped

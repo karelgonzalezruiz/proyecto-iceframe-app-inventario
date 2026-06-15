@@ -1,0 +1,379 @@
+/* ============================================================
+   IceFrame Inventory — identidad visual
+   Base: Tabler (Bootstrap 5). Acabado inspirado en Horizon UI
+   (sombras suaves, esquinas amplias, tipografía navy, microanimaciones).
+   Identidad propia: azul hielo.
+   ============================================================ */
+
+:root {
+    /* Marca (azul hielo) */
+    --if-sky:        #38bdf8;
+    --if-sky-strong: #0ea5e9;
+    --if-sky-deep:   #0284c7;
+
+    /* Texto tipo Horizon (navy) */
+    --if-navy:       #1b2559;
+    --if-navy-2:     #2b3674;
+    --if-text:       #1e293b;
+    --if-muted:      #64748b;
+    --if-muted-2:    #a3aed0;
+
+    /* Superficies */
+    --if-bg-1:       #eef4fb;
+    --if-bg-2:       #e4ecf7;
+    --if-card:       #ffffff;
+
+    /* Acentos semánticos */
+    --if-green:      #22c55e;
+    --if-red:        #ef4444;
+    --if-amber:      #f59e0b;
+    --if-violet:     #7c3aed;
+    --if-indigo:     #4318ff;
+
+    /* Sombra firma Horizon */
+    --if-shadow:     0 18px 40px rgba(112, 144, 176, .12);
+    --if-shadow-sm:  0 6px 18px rgba(112, 144, 176, .12);
+    --if-shadow-lg:  0 24px 50px rgba(112, 144, 176, .22);
+    --if-radius:     20px;
+
+    /* Tabler primary -> azul hielo */
+    --tblr-primary: var(--if-sky-strong);
+    --tblr-primary-rgb: 14, 165, 233;
+    --tblr-body-color: var(--if-text);
+    --tblr-font-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ---------- Fondo de página ---------- */
+.iceframe-body {
+    background: radial-gradient(1200px 600px at 100% -10%, rgba(56, 189, 248, .10), transparent 60%),
+                linear-gradient(180deg, var(--if-bg-1) 0%, var(--if-bg-2) 100%) !important;
+    background-attachment: fixed;
+    color: var(--if-text);
+}
+
+/* ---------- Layout estable: footer siempre al fondo, sin saltos ----------
+   1) Barra de scroll SIEMPRE visible (overflow-y: scroll). Así el tope y los
+      bordes no se mueven entre páginas con y sin scroll. Nota: scrollbar-gutter
+      solo funciona si el elemento es contenedor de scroll, por eso se fija
+      también overflow-y.
+   2) Footer pegado al fondo (sticky footer): la columna principal llena el alto
+      de la ventana y el cuerpo crece para empujar el footer abajo. En páginas
+      cortas (formularios) el footer queda al fondo igual; en las largas, tras
+      el contenido. Siempre en el mismo lugar. */
+html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+}
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.page-body {
+    flex: 1 0 auto;
+}
+.footer {
+    flex-shrink: 0;
+}
+
+/* Títulos navy estilo Horizon.
+   user-select: none evita que al hacer clic en el título quede seleccionado y
+   se pinte el recuadro azul de selección ("la caja" superpuesta al texto). */
+.page-title { color: var(--if-navy-2); font-weight: 700; letter-spacing: -.01em; user-select: none; }
+.page-pretitle { color: var(--if-muted-2); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; user-select: none; }
+.card-title { color: var(--if-navy-2); font-weight: 700; }
+
+/* ---------- Marca ---------- */
+.iceframe-brand {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+.iceframe-brand img { display: block; width: 150px; height: auto; }
+.iceframe-mobile-brand img { display: block; width: 34px; height: 34px; object-fit: contain; }
+
+/* ---------- Sidebar ---------- */
+.iceframe-sidebar {
+    background: linear-gradient(180deg, #0b1220 0%, #111c33 60%, #0d2236 100%) !important;
+    border-right: 1px solid rgba(56, 189, 248, .08);
+}
+.iceframe-sidebar .nav-link { color: #aeb9d0; border-radius: 12px; margin: 2px 6px; transition: all .18s ease; }
+.iceframe-sidebar .nav-link-title { color: #c7d2e4; }
+.iceframe-sidebar .nav-link:hover { background: rgba(56, 189, 248, .08); }
+.iceframe-sidebar .nav-item.active > .nav-link {
+    background: linear-gradient(90deg, rgba(56, 189, 248, .22), rgba(56, 189, 248, .06));
+    box-shadow: inset 3px 0 0 var(--if-sky);
+}
+.iceframe-sidebar .nav-item.active .nav-link-title,
+.iceframe-sidebar .nav-item.active .nav-link-icon i { color: var(--if-sky); }
+.iceframe-sidebar .nav-link-icon i { transition: transform .18s ease; }
+.iceframe-sidebar .nav-link:hover .nav-link-icon i { transform: translateX(2px) scale(1.08); }
+
+/* ---------- Navbar superior ---------- */
+.iceframe-navbar {
+    background: rgba(255, 255, 255, .82);
+    backdrop-filter: saturate(160%) blur(10px);
+    border-bottom: 1px solid rgba(112, 144, 176, .14);
+    box-shadow: 0 4px 18px rgba(112, 144, 176, .08);
+}
+.iceframe-navbar .navbar-nav.order-md-last { margin-left: auto; }
+.iceframe-avatar {
+    background: linear-gradient(135deg, var(--if-sky) 0%, var(--if-sky-deep) 100%);
+    color: #fff; font-weight: 700; box-shadow: 0 6px 14px rgba(14, 165, 233, .35);
+}
+
+/* ============================================================
+   TARJETAS (acabado Horizon)
+   ============================================================ */
+.page-body .card {
+    background: var(--if-card);
+    border: 1px solid rgba(112, 144, 176, .10);
+    border-radius: var(--if-radius);
+    box-shadow: var(--if-shadow);
+    transition: box-shadow .22s ease;
+}
+.card-header { border-bottom: 1px solid rgba(112, 144, 176, .10); }
+
+/* ---------- Tarjetas stat ---------- */
+.iceframe-stat .card-body { padding: 1.25rem 1.35rem; }
+.iceframe-stat .iceframe-stat-label { color: var(--if-muted-2); font-weight: 600; font-size: .82rem; }
+.iceframe-stat .iceframe-stat-value {
+    font-size: 1.9rem; font-weight: 800; color: var(--if-navy-2); line-height: 1.1; letter-spacing: -.02em;
+}
+.iceframe-kpi-row > [class*="col-"] { display: flex; }
+.iceframe-kpi-row .iceframe-stat { width: 100%; min-height: 152px; }
+.iceframe-kpi-row .iceframe-stat .card-body { width: 100%; }
+
+/* Insignia circular con gradiente (estilo Horizon) — 4 variantes */
+.iceframe-badge {
+    width: 56px; height: 56px; flex: 0 0 56px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 18px; font-size: 1.55rem; color: #fff;
+    box-shadow: 0 10px 22px rgba(14, 165, 233, .28);
+    transition: transform .25s ease;
+}
+.iceframe-stat:hover .iceframe-badge { transform: translateY(-2px) rotate(-6deg) scale(1.05); }
+.if-badge-sky    { background: linear-gradient(135deg, #38bdf8, #0284c7); box-shadow: 0 10px 22px rgba(14,165,233,.30); }
+.if-badge-amber  { background: linear-gradient(135deg, #fbbf24, #f59e0b); box-shadow: 0 10px 22px rgba(245,158,11,.30); }
+.if-badge-violet { background: linear-gradient(135deg, #a78bfa, #6d28d9); box-shadow: 0 10px 22px rgba(124,58,237,.30); }
+.if-badge-green  { background: linear-gradient(135deg, #4ade80, #16a34a); box-shadow: 0 10px 22px rgba(34,197,94,.30); }
+
+/* Indicador de tendencia */
+.iceframe-trend { display: inline-flex; align-items: center; gap: .15rem; font-weight: 700; font-size: .82rem; padding: .12rem .5rem; border-radius: 999px; }
+.iceframe-trend.up   { color: #16a34a; background: rgba(34,197,94,.12); }
+.iceframe-trend.down { color: #dc2626; background: rgba(239,68,68,.12); }
+.iceframe-trend.flat { color: var(--if-muted); background: rgba(100,116,139,.10); }
+
+/* Mini barra de progreso bajo el valor */
+.iceframe-progress { height: 6px; border-radius: 999px; background: rgba(112,144,176,.16); overflow: hidden; }
+.iceframe-progress > span { display: block; height: 100%; border-radius: 999px;
+    background: linear-gradient(90deg, var(--if-sky), var(--if-sky-deep)); transition: width 1s cubic-bezier(.2,.7,.3,1); }
+
+/* ---------- Resumen de ventas ---------- */
+.iceframe-sales-total {
+    overflow: hidden;
+    background:
+        radial-gradient(320px 180px at 100% 0%, rgba(56, 189, 248, .18), transparent 68%),
+        linear-gradient(135deg, #ffffff 0%, #f7fbff 100%) !important;
+}
+.iceframe-sales-total .card-body {
+    min-height: 170px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.4rem;
+    padding: 1.75rem;
+    text-align: left;
+}
+.iceframe-sales-total-icon {
+    width: 78px;
+    height: 78px;
+    flex: 0 0 78px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 24px;
+    color: #fff;
+    font-size: 2.15rem;
+    background: linear-gradient(135deg, var(--if-sky), var(--if-sky-deep));
+    box-shadow: 0 16px 30px rgba(14, 165, 233, .30);
+}
+.iceframe-sales-total-copy { min-width: 0; }
+.iceframe-sales-total-label {
+    color: var(--if-navy-2);
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+.iceframe-sales-total-value {
+    margin-top: .2rem;
+    color: var(--if-navy-2);
+    font-size: clamp(2.2rem, 3vw, 3rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -.04em;
+}
+.iceframe-sales-total-meta {
+    margin-top: .55rem;
+    color: var(--if-muted);
+    font-size: .9rem;
+    font-weight: 500;
+}
+.iceframe-payment-card .card-header {
+    min-height: 54px;
+    padding: .9rem 1.35rem;
+}
+.iceframe-payment-card .table { margin-bottom: 0; }
+.iceframe-payment-card .table th,
+.iceframe-payment-card .table td { padding: .72rem 1.35rem; }
+.iceframe-payment-method {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    color: var(--if-navy-2);
+    font-weight: 600;
+}
+.iceframe-payment-method i {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: var(--if-sky-deep);
+    background: rgba(56, 189, 248, .12);
+}
+
+@media (max-width: 575.98px) {
+    .iceframe-sales-total .card-body {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+}
+
+/* ============================================================
+   BADGES de estado de stock
+   ============================================================ */
+.badge { font-weight: 600; }
+.estado-disponible { background: linear-gradient(135deg, #4ade80, #16a34a) !important; color: #fff; }
+.estado-bajo       { background: linear-gradient(135deg, #fbbf24, #f59e0b) !important; color: #fff; }
+.estado-agotado    { background: linear-gradient(135deg, #f87171, #dc2626) !important; color: #fff; }
+.estado-desactivado{ background: linear-gradient(135deg, #94a3b8, #64748b) !important; color: #fff; }
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+.btn-iceframe {
+    background: linear-gradient(135deg, var(--if-sky) 0%, var(--if-sky-deep) 100%);
+    border: none; color: #fff; font-weight: 600;
+    box-shadow: 0 8px 18px rgba(14, 165, 233, .30);
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+.btn-iceframe:hover { color: #fff; transform: translateY(-1px); filter: brightness(1.04); box-shadow: 0 12px 24px rgba(14,165,233,.40); }
+.btn-iceframe:active { transform: translateY(0); }
+.btn { border-radius: 10px; }
+.btn-outline-primary { border-color: rgba(14,165,233,.4); color: var(--if-sky-deep); }
+.btn-outline-primary:hover { background: var(--if-sky-strong); border-color: var(--if-sky-strong); }
+
+/* ---------- Tablas ---------- */
+.card-table thead th { color: var(--if-muted-2); text-transform: uppercase; font-size: .72rem; letter-spacing: .06em; }
+.table-vcenter tbody tr { transition: background .12s ease; }
+.table-vcenter tbody tr:hover { background: rgba(56, 189, 248, .05); }
+
+/* ============================================================
+   MICROANIMACIONES
+   ============================================================ */
+@keyframes fade-in-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+.iceframe-fade { animation: fade-in-up .5s cubic-bezier(.2,.7,.3,1) both; }
+
+/* Grupo select + botón "+ Nueva" */
+.iceframe-select-group { align-items: stretch; }
+.iceframe-select-group .ts-wrapper,
+.iceframe-select-group .form-select { flex: 1 1 auto; min-width: 0; }
+
+/* Controles de formulario */
+.form-control, .form-select { border-radius: 10px; border-color: rgba(112,144,176,.28); }
+.form-control:focus, .form-select:focus { border-color: var(--if-sky); box-shadow: 0 0 0 .2rem rgba(56,189,248,.18); }
+.form-label.required::after { display: none; }
+.ts-control { border-radius: 10px; min-height: 38px; border-color: rgba(112,144,176,.28); }
+.ts-control:focus-within { border-color: var(--if-sky); box-shadow: 0 0 0 .2rem rgba(56,189,248,.18); }
+
+/* ============================================================
+   LOGIN
+   ============================================================ */
+.iceframe-login-wrap {
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #0b1220 0%, #0b3a52 55%, var(--if-sky-strong) 140%);
+    padding: 1rem;
+}
+.iceframe-login-page {
+    overflow: hidden;
+    scrollbar-gutter: auto;
+}
+.iceframe-login-page body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0;
+    overflow: hidden;
+}
+.iceframe-login-card { width: 100%; max-width: 400px; border: none; border-radius: 22px; box-shadow: 0 26px 60px rgba(2, 8, 23, .5); }
+.iceframe-login-brand { text-align: center; }
+.iceframe-login-brand img { width: min(100%, 300px); height: auto; }
+
+/* ============================================================
+   Tom Select — dropdown legible e integrado con Tabler
+   ============================================================ */
+.ts-dropdown {
+    background: #ffffff;
+    border: 1px solid rgba(112, 144, 176, .28);
+    border-radius: 10px;
+    box-shadow: 0 12px 28px rgba(2, 8, 23, .14);
+    z-index: 1080;
+    margin-top: 4px;
+    overflow: hidden;
+}
+
+.ts-dropdown .option {
+    color: #1e293b;
+    padding: 8px 12px;
+    font-size: .9rem;
+    line-height: 1.3;
+    background: #ffffff;
+}
+
+.ts-dropdown .option:hover,
+.ts-dropdown .option.active {
+    background: var(--if-sky-strong);
+    color: #ffffff;
+}
+
+.ts-dropdown .no-results {
+    color: #64748b;
+    padding: 8px 12px;
+    font-size: .85rem;
+}
+
+.ts-control,
+.ts-control input {
+    color: #1e293b;
+}
+
+.ts-control input::placeholder {
+    color: #94a3b8;
+}
+
+.ts-wrapper.single .ts-dropdown {
+    width: 100%;
+}
+
+/* El selector buscable no debe crecer ni reacomodar la fila al enfocarlo:
+   se mantiene del ancho de su columna y el texto largo se trunca. */
+.ts-wrapper { width: 100%; min-width: 0; max-width: 100%; }
+.ts-wrapper.single .ts-control { flex-wrap: nowrap; overflow: hidden; }
+.ts-wrapper.single .ts-control > .item {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.ts-control > input { min-width: 0 !important; }
