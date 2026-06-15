@@ -1,53 +1,96 @@
-# IceFrame Inventory — Sistema distribuido de inventario con Laravel, PostgreSQL y Tailscale
+<p align="center">
+  <img src="public/images/brand/iceframe-logo-sidebar.png" alt="Logo de IceFrame Inventory" width="430">
+</p>
 
-> Aplicación web de inventario para productos tecnológicos, construida como el **Contenedor A** de un sistema distribuido. La aplicación Laravel gestiona catálogo, stock, ventas, movimientos e indicadores, mientras consume una base de datos PostgreSQL remota y se integra con un módulo de reportes externo por red privada Tailscale.
+<h1 align="center">IceFrame Inventory</h1>
 
 <p align="center">
-  <img src="docs/screenshots/dashboard-parte-1.png" alt="Dashboard principal de IceFrame Inventory" width="100%">
+  Sistema de inventario distribuido con Laravel, PostgreSQL, Docker y Tailscale.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Laravel-13-red?style=for-the-badge&logo=laravel" alt="Laravel 13">
+  <img src="https://img.shields.io/badge/PHP-8.4-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.4">
+  <img src="https://img.shields.io/badge/PostgreSQL-remoto-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL remoto">
+  <img src="https://img.shields.io/badge/Docker-contenedor-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
+  <img src="https://img.shields.io/badge/Tailscale-red%20privada-242424?style=for-the-badge&logo=tailscale&logoColor=white" alt="Tailscale">
 </p>
 
 ---
 
 ## Descripción
 
-**IceFrame Inventory** es una aplicación web para administrar el inventario de una tienda de drones, cámaras de acción, cámaras 360, accesorios audiovisuales y equipos para creación de contenido. El sistema permite consultar el catálogo, registrar productos, editar información comercial, controlar stock, registrar ventas, registrar reposiciones, reportar hurtos y revisar el historial completo de movimientos.
+**IceFrame Inventory** es una aplicación web para administrar el inventario de una tienda de productos tecnológicos: drones, cámaras de acción, cámaras 360, accesorios audiovisuales y equipos para creación de contenido.
 
-La particularidad del proyecto es su enfoque de **sistema distribuido**: la aplicación de inventario no depende de una base local embebida, sino que se conecta a una base de datos PostgreSQL ubicada en otro contenedor o máquina dentro de una red privada **Tailscale**. Además, el dashboard puede redirigir hacia un módulo de reportes externo mediante la variable `REPORTES_URL`.
+Este repositorio contiene la **aplicación de inventario del Estudiante 1**, desarrollada en Laravel y ejecutada dentro de un contenedor Docker. La aplicación se conecta a una base de datos PostgreSQL remota ubicada en la máquina del Estudiante 2 mediante una red privada **Tailscale**. Además, permite integrarse con un módulo externo de reportes mediante la variable de entorno `REPORTES_URL`.
 
-El proyecto demuestra una separación clara entre aplicación, base de datos y reportes: Laravel actúa como capa de presentación, validación y lógica de negocio; PostgreSQL conserva la persistencia compartida; y el servicio de reportes opera como componente independiente dentro de la arquitectura.
+El sistema permite consultar productos, registrar nuevos artículos, editar información comercial, actualizar stock, registrar ventas, reportar hurtos, registrar reposiciones, consultar movimientos y exportar información en formatos CSV y JSON.
 
 ---
 
-## Flujo del Proyecto
+## Contexto Académico
+
+Proyecto de la asignatura **Sistemas Distribuidos**.
+
+La consigna solicita un sistema de inventario compuesto por servicios independientes en contenedores Docker:
+
+| Servicio | Responsable | Descripción |
+|---------|-------------|-------------|
+| Aplicación de inventario | Estudiante 1 | Aplicación web para gestionar productos, stock y operaciones de inventario. |
+| Base de datos | Estudiante 2 | Contenedor PostgreSQL con persistencia mediante volumen Docker. |
+| Sistema de reportes | Estudiante 2 | Servicio independiente conectado a la base de datos por red Docker interna. |
+
+Este repositorio corresponde a la **aplicación de inventario**. La base de datos y el sistema de reportes se despliegan desde el repositorio o máquina del segundo integrante.
+
+---
+
+## Cumplimiento de la Consigna
+
+| Requisito solicitado | Implementación en IceFrame |
+|---------------------|----------------------------|
+| Registrar nuevo producto | Formulario de creación de producto con categoría, marca, proveedor, condición, precio y stock. |
+| Actualizar stock de producto existente | Reposición de stock, venta transaccional, registro de hurto y edición controlada. |
+| Eliminar producto | Desactivación lógica y eliminación física segura para administradores. |
+| Listar productos | Catálogo con filtros, estados de stock y ordenamiento. |
+| Consultar producto por ID o nombre | Búsqueda por producto, filtros y vista de detalle. |
+| Leer IP y credenciales desde `.env` | Variables `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`. |
+| Tener Dockerfile propio | `Dockerfile` incluido en la raíz del proyecto. |
+| Exponer puerto accesible por Tailscale | `docker-compose.yml` expone `8000:8000`. |
+| Conectarse a la base del Estudiante 2 | Conexión PostgreSQL mediante IP Tailscale. |
+| Integrarse con reportes | Botón de redirección configurable con `REPORTES_URL`. |
+
+---
+
+## Arquitectura Distribuida
 
 ```text
 Usuario en navegador
    ↓
-Vista Blade + Tabler UI + JavaScript
-   ↓
-Rutas Laravel  →  Controllers
-   ↓
-Servicios de dominio / Eloquent Models
-   ↓
-Conexión PostgreSQL por IP Tailscale
-   ↓
-Tablas de negocio: productos · ventas · movimientos · usuarios
-   ↓
-Respuesta renderizada en Dashboard, Catálogo, Ventas o Movimientos
-```
-
-### Flujo distribuido
-
-```text
-Cliente web
-   ↓
-Contenedor A: iceframe-app  (Laravel)
+Contenedor de aplicación: iceframe-app
+Laravel + Blade + CSS + JavaScript
    ↓
 Red privada Tailscale
    ↓
-Contenedor/Máquina B: PostgreSQL  (base iceframe)
+Servidor del Estudiante 2
+PostgreSQL + módulo de reportes
    ↓
-Contenedor/Máquina C: Reportes  (opcional vía REPORTES_URL)
+Persistencia y reportes operativos
+```
+
+### Flujo lógico de la aplicación
+
+```text
+Vista Blade
+   ↓
+Rutas Laravel
+   ↓
+Controllers
+   ↓
+Modelos Eloquent / Servicios de dominio
+   ↓
+PostgreSQL remoto por Tailscale
+   ↓
+Respuesta renderizada en Dashboard, Catálogo, Ventas o Movimientos
 ```
 
 ---
@@ -55,57 +98,98 @@ Contenedor/Máquina C: Reportes  (opcional vía REPORTES_URL)
 ## Stack Tecnológico
 
 | Capa / Módulo | Tecnología |
-|---------------|------------|
+|--------------|------------|
 | Backend | PHP 8.4 · Laravel 13 |
 | Frontend | Blade · Tabler UI · Bootstrap 5 · CSS personalizado |
 | Interactividad | JavaScript · Tom Select · ApexCharts |
 | Base de datos | PostgreSQL remoto |
 | Red privada | Tailscale |
 | Contenedores | Docker · Docker Compose |
-| Autenticación | Guard web de Laravel usando modelo `Usuario` y tabla `usuarios` |
-| Exportaciones | CSV UTF-8 con BOM · JSON pretty print |
+| Autenticación | Guard web de Laravel con modelo `Usuario` |
+| Exportaciones | CSV UTF-8 con BOM · JSON con formato legible |
 
 ---
 
-## Arquitectura del Repositorio
+## Justificación del Motor de Base de Datos
+
+Se utiliza **PostgreSQL** porque es un motor relacional robusto, estable y adecuado para un sistema de inventario con relaciones entre productos, categorías, marcas, proveedores, ventas, detalles de venta y movimientos de stock.
+
+PostgreSQL permite trabajar con integridad referencial, transacciones, bloqueos de filas y consultas agregadas. Esto es importante porque el sistema registra operaciones que modifican stock y deben mantenerse consistentes, como ventas, reposiciones y hurtos.
+
+Además, PostgreSQL funciona correctamente en contenedores Docker, permite persistencia mediante volúmenes y puede exponerse por la red privada Tailscale sin depender de una base local en la aplicación.
+
+---
+
+## Estructura del Repositorio
 
 ```text
 app-inventario/
 ├── app/
 │   ├── Http/
 │   │   ├── Controllers/
-│   │   │   ├── Auth/LoginController.php       # Login interno contra usuarios
-│   │   │   ├── DashboardController.php        # KPIs y gráficos del panel
-│   │   │   ├── ProductoController.php         # Catálogo, CRUD y exportaciones
-│   │   │   ├── VentaController.php            # Venta transaccional y resumen
-│   │   │   ├── InventarioController.php       # Reposición y hurto
-│   │   │   └── MovimientoController.php       # Historial y exportaciones
+│   │   │   ├── Auth/
+│   │   │   │   └── LoginController.php
+│   │   │   ├── DashboardController.php
+│   │   │   ├── InventarioController.php
+│   │   │   ├── MovimientoController.php
+│   │   │   ├── ProductoController.php
+│   │   │   └── VentaController.php
 │   │   └── Middleware/
-│   │       └── EnsureAdmin.php                # Acciones exclusivas de administrador
-│   ├── Models/                               # Modelos Eloquent del dominio
+│   │       └── EnsureAdmin.php
+│   ├── Models/
+│   │   ├── Categoria.php
+│   │   ├── Cliente.php
+│   │   ├── DetalleVenta.php
+│   │   ├── Marca.php
+│   │   ├── MovimientoInventario.php
+│   │   ├── Producto.php
+│   │   ├── Proveedor.php
+│   │   ├── Rol.php
+│   │   ├── Usuario.php
+│   │   └── Venta.php
 │   └── Services/
-│       └── GraficosService.php               # Datasets para ApexCharts
+│       └── GraficosService.php
 ├── config/
-│   ├── app.php                               # REPORTES_URL y configuración general
-│   ├── auth.php                              # Provider usuarios
-│   └── database.php                          # Conexión PostgreSQL/Tailscale
+│   ├── app.php
+│   ├── auth.php
+│   ├── database.php
+│   └── session.php
 ├── public/
-│   ├── css/iceframe.css                      # Identidad visual azul hielo
-│   ├── js/iceframe.js                        # UI, selects, modales, gráficos
-│   └── images/brand/                         # Logo, icono y favicon
-├── resources/views/
-│   ├── auth/login.blade.php
-│   ├── dashboard.blade.php
-│   ├── productos/                            # Catálogo, detalle, crear, editar
-│   ├── ventas/                               # Registrar venta y resumen
-│   ├── movimientos/                          # Historial de movimientos
-│   ├── inventario/                           # Hurto y reposición
-│   ├── layouts/app.blade.php
-│   └── partials/                             # Sidebar, navbar, footer
-├── routes/web.php                            # Rutas protegidas y administrativas
-├── Dockerfile                                # Imagen PHP/Laravel para el contenedor A
-├── docker-compose.yml                        # Orquestación del contenedor de app
-├── .env.example                              # Variables para DB remota y reportes
+│   ├── css/
+│   │   └── iceframe.css
+│   ├── js/
+│   │   └── iceframe.js
+│   └── images/
+│       └── brand/
+│           ├── favicon.png
+│           ├── iceframe-icon.png
+│           ├── iceframe-logo.png
+│           └── iceframe-logo-sidebar.png
+├── resources/
+│   └── views/
+│       ├── auth/
+│       ├── inventario/
+│       ├── layouts/
+│       ├── movimientos/
+│       ├── partials/
+│       ├── productos/
+│       ├── ventas/
+│       └── dashboard.blade.php
+├── routes/
+│   ├── console.php
+│   └── web.php
+├── storage/
+├── docs/
+│   ├── screenshots/
+│   └── exports/
+├── Dockerfile
+├── docker-compose.yml
+├── .dockerignore
+├── .env.example
+├── .gitignore
+├── artisan
+├── composer.json
+├── composer.lock
 └── README.md
 ```
 
@@ -113,31 +197,31 @@ app-inventario/
 
 ## Modelo de Datos
 
-La aplicación trabaja sobre un esquema PostgreSQL preparado por el servicio de base de datos. Laravel no migra las tablas de negocio; consume el esquema existente mediante modelos Eloquent.
+La aplicación consume un esquema PostgreSQL administrado desde el servicio de base de datos. Las tablas principales del dominio son:
 
 | Tabla | Propósito |
 |------|-----------|
-| `roles` | Define perfiles como Administrador y Trabajador. |
+| `roles` | Define perfiles de usuario, como administrador y trabajador. |
 | `usuarios` | Usuarios internos que pueden iniciar sesión y operar el sistema. |
-| `categorias` | Clasificación de productos: drones, cámaras, accesorios, etc. |
-| `marcas` | Marcas comerciales como DJI, GoPro, Insta360 o Autel Robotics. |
-| `proveedores` | Proveedores asociados a los productos. |
-| `productos` | Catálogo principal con precio, condición, stock actual y stock mínimo. |
-| `clientes` | Clientes registrados durante las ventas. |
+| `categorias` | Clasificación de productos. |
+| `marcas` | Marcas comerciales asociadas al catálogo. |
+| `proveedores` | Proveedores vinculados a productos. |
+| `productos` | Catálogo principal con descripción, precio, stock, condición y estado. |
+| `clientes` | Clientes registrados durante operaciones de venta. |
 | `ventas` | Cabecera de ventas completadas o anuladas. |
-| `detalle_venta` | Detalle de productos vendidos, cantidad, precio histórico y subtotal. |
+| `detalle_venta` | Productos vendidos, cantidades, precios históricos y subtotales. |
 | `movimientos_inventario` | Bitácora de ventas, reposiciones, hurtos y ajustes. |
 
 ---
 
 ## Roles y Permisos
 
-| Rol | Permisos principales |
-|-----|----------------------|
-| Administrador | Acceso completo al dashboard, catálogo, ventas, movimientos, reposición, hurto, desactivación, reactivación y eliminación segura de productos. |
-| Trabajador | Consulta de inventario, registro de ventas, reposición de stock y visualización de reportes operativos. |
+| Rol | Acceso |
+|-----|--------|
+| Administrador | Dashboard, catálogo, ventas, movimientos, reposiciones, hurtos, desactivación, reactivación y eliminación segura de productos. |
+| Trabajador | Dashboard, consulta de inventario, registro de ventas, reposición de stock y revisión de reportes operativos. |
 
-Las rutas sensibles están protegidas con el middleware `admin`. Por ejemplo, registrar hurtos, desactivar productos, reactivar productos y eliminar productos físicamente solo está permitido para administradores.
+Las acciones sensibles se protegen mediante middleware. Por ejemplo, el registro de hurtos y la eliminación física de productos solo están disponibles para administradores.
 
 ---
 
@@ -145,84 +229,119 @@ Las rutas sensibles están protegidas con el middleware `admin`. Por ejemplo, re
 
 ### Dashboard operativo
 
-El panel principal resume el estado del negocio con indicadores y gráficos. Incluye productos activos, productos bajo stock, valor total de inventario, ventas del día, tendencia frente al día anterior, ventas por día, top de productos, movimientos por tipo y valor de inventario por categoría.
+El dashboard presenta una vista general del inventario y las ventas:
 
-| Indicador | Descripción |
-|----------|-------------|
-| Productos activos | Total de productos habilitados en catálogo. |
-| Bajo stock | Productos cuyo `stock_actual` está en o por debajo del `stock_minimo`. |
-| Valor de inventario | Suma de `precio_unitario * stock_actual` para productos activos. |
-| Ventas del día | Total vendido en ventas completadas del día actual. |
-| Salud del stock | Porcentaje de productos activos sin alerta de bajo stock. |
+- Productos activos.
+- Productos con bajo stock.
+- Valor total del inventario.
+- Ventas del día.
+- Comparación contra el día anterior.
+- Gráfico de ventas por día.
+- Top de productos más vendidos.
+- Distribución de movimientos.
+- Valor de inventario por categoría.
 
 ### Catálogo de inventario
 
-El catálogo permite consultar productos con filtros por producto, categoría, marca, estado de stock, orden y dirección. También permite exportar el resultado filtrado en CSV o JSON.
+Permite consultar todos los productos registrados con filtros por nombre, categoría, marca, estado de stock y ordenamiento.
 
-Estados calculados del producto:
+Estados calculados:
 
 | Estado | Regla |
-|--------|-------|
+|-------|-------|
 | Disponible | Producto activo con stock mayor al mínimo. |
 | Bajo stock | Producto activo con stock menor o igual al mínimo y mayor que cero. |
 | Agotado | Producto activo con stock igual o menor que cero. |
 | Desactivado | Producto oculto del catálogo regular por `activo = false`. |
 
-### Registro y edición de productos
+### Registro de productos
 
-El formulario de productos permite registrar nombre, descripción, categoría, marca, proveedor, condición, precio, stock actual y stock mínimo. También incluye creación rápida de catálogos mediante modales para agregar marcas, categorías o proveedores sin abandonar el formulario.
+El sistema permite registrar productos con:
+
+- Nombre.
+- Descripción.
+- Categoría.
+- Marca.
+- Proveedor.
+- Condición.
+- Precio unitario.
+- Stock actual.
+- Stock mínimo.
+
+También incluye creación rápida de categorías, marcas y proveedores mediante modales.
+
+### Edición de productos
+
+Permite actualizar información comercial del producto y reflejar los cambios en el catálogo. La edición mantiene trazabilidad cuando el producto ya tiene operaciones asociadas.
 
 ### Venta transaccional
 
-El registro de venta valida cédula, cliente, producto, cantidad y método de pago. La operación se ejecuta dentro de una transacción de base de datos:
+El registro de venta valida cliente, producto, cantidad y método de pago. La operación descuenta stock y registra el movimiento de inventario dentro de una transacción.
 
-```php
-DB::transaction(function () {
-    $producto = Producto::where('id', $productoId)->lockForUpdate()->first();
-
-    // validar stock disponible
-    // crear cliente si no existe
-    // crear venta completada
-    // crear detalle_venta
-    // descontar stock
-    // registrar movimiento tipo Venta
-});
+```text
+Formulario de venta
+   ↓
+Validación Laravel
+   ↓
+DB::transaction()
+   ↓
+Bloqueo del producto con lockForUpdate()
+   ↓
+Creación o reutilización del cliente
+   ↓
+Creación de venta y detalle
+   ↓
+Descuento de stock
+   ↓
+Movimiento de inventario tipo Venta
+   ↓
+Confirmación de operación
 ```
 
-Además, el formulario incluye protección contra doble clic en frontend y una llave de idempotencia en backend para reducir el riesgo de registrar una misma venta dos veces.
+Este flujo evita inconsistencias cuando el stock cambia durante una operación crítica.
 
 ### Reposición de stock
 
-Permite sumar unidades al inventario y registrar automáticamente un movimiento tipo `Reposicion`. La observación es obligatoria para dejar trazabilidad del ingreso.
+Permite sumar unidades al inventario y registrar un movimiento tipo `Reposicion`. La observación es obligatoria para mantener trazabilidad del ingreso.
 
 ### Registro de hurto
 
-Permite descontar unidades por pérdida o hurto. Está restringido al rol Administrador, valida que no se reste más del stock disponible y genera un movimiento tipo `Hurto`.
+Permite descontar unidades por pérdida o hurto. Esta operación está restringida al rol administrador y valida que no se descuente más stock del disponible.
 
 ### Historial de movimientos
 
-El módulo de movimientos funciona como bitácora del inventario. Permite filtrar por tipo y por rango de fechas, además de exportar los resultados en CSV o JSON.
+El historial funciona como bitácora del inventario. Registra ventas, reposiciones, hurtos y ajustes. Incluye filtros y exportación en CSV o JSON.
 
 ### Resumen de ventas
 
-El resumen permite revisar ventas completadas por periodo: día, semana, mes, año o total. También muestra totales por método de pago y permite exportar la información.
+Permite revisar ventas completadas por día, semana, mes, año o total. También presenta totales por método de pago y exportaciones.
 
 ---
 
 ## Datos de Prueba y Exportaciones
 
-Los archivos CSV y JSON generados por el sistema evidencian que las exportaciones funcionan desde los módulos principales.
+Los archivos ubicados en `docs/exports/` evidencian el funcionamiento de las exportaciones del sistema.
 
 | Reporte | Formatos | Datos validados |
-|---------|----------|-----------------|
-| Catálogo de inventario | CSV · JSON | 47 productos, 213 unidades en stock y valor total aproximado de $110,453.72. |
-| Resumen de ventas | CSV · JSON | 7 ventas completadas en el periodo día, por un total de $6,334.87. |
-| Movimientos de inventario | CSV · JSON | 101 movimientos registrados entre ventas, reposiciones, hurtos y ajustes. |
+|--------|----------|-----------------|
+| Catálogo de inventario | CSV · JSON | 47 productos registrados. |
+| Movimientos de inventario | CSV · JSON | 101 movimientos entre ventas, reposiciones, hurtos y ajustes. |
+| Resumen de ventas | CSV · JSON | 7 ventas completadas en el periodo diario de prueba. |
 
-Distribución del catálogo exportado:
+### Indicadores exportados
+
+| Indicador | Valor |
+|----------|-------|
+| Productos registrados | 47 |
+| Movimientos registrados | 101 |
+| Ventas completadas en el periodo de prueba | 7 |
+| Total vendido en el periodo de prueba | $6,334.87 |
+| Valor total aproximado del inventario | $110,453.72 |
+
+### Distribución de estado del catálogo
 
 | Estado | Cantidad |
-|--------|----------|
+|-------|----------|
 | Disponible | 30 |
 | Bajo stock | 15 |
 | Agotado | 2 |
@@ -238,13 +357,13 @@ Distribución del catálogo exportado:
 | `POST` | `/logout` | Cierre de sesión. |
 | `GET` | `/` | Redirección al dashboard. |
 | `GET` | `/dashboard` | Panel principal con KPIs y gráficos. |
-| `GET` | `/reportes` | Redirección al módulo externo de reportes configurado en `REPORTES_URL`. |
+| `GET` | `/reportes` | Redirección al módulo externo configurado en `REPORTES_URL`. |
 | `GET` | `/productos` | Catálogo de inventario con filtros. |
 | `GET` | `/productos/csv` | Exportación CSV del catálogo. |
 | `GET` | `/productos/json` | Exportación JSON del catálogo. |
 | `GET` | `/productos/create` | Formulario de registro de producto. |
 | `POST` | `/productos` | Guardar producto nuevo. |
-| `GET` | `/productos/{producto}` | Detalle de producto. |
+| `GET` | `/productos/{producto}` | Detalle del producto. |
 | `GET` | `/productos/{producto}/edit` | Formulario de edición. |
 | `PUT/PATCH` | `/productos/{producto}` | Actualizar producto. |
 | `DELETE` | `/productos/{producto}` | Desactivar producto. Solo administrador. |
@@ -267,7 +386,7 @@ Distribución del catálogo exportado:
 
 ## Capturas de Pantalla
 
-Las capturas se encuentran en:
+Las capturas utilizadas para documentar el sistema se encuentran en:
 
 ```text
 docs/screenshots/
@@ -283,7 +402,7 @@ docs/screenshots/
 
 | Dashboard - parte 1 | Dashboard - parte 2 |
 |--------------------|--------------------|
-| <img src="docs/screenshots/dashboard-parte-1.png" alt="Dashboard con KPIs y gráficos principales" width="100%"> | <img src="docs/screenshots/dashboard-parte-2.png" alt="Dashboard con gráficos de movimientos y categorías" width="100%"> |
+| <img src="docs/screenshots/dashboard-parte-1.png" alt="Dashboard con KPIs y gráficos principales" width="100%"> | <img src="docs/screenshots/dashboard-parte-2.png" alt="Dashboard con gráficos complementarios" width="100%"> |
 
 ### Catálogo y detalle de productos
 
@@ -351,21 +470,22 @@ docs/screenshots/
 
 ### Para ejecución con Docker
 
-- Docker Desktop o Docker Engine
-- Docker Compose
-- Acceso a la red Tailscale donde se encuentra PostgreSQL
-- Archivo `.env` configurado con la IP y credenciales de la base remota
+- Docker Desktop o Docker Engine.
+- Docker Compose.
+- Acceso a la red Tailscale.
+- Base de datos PostgreSQL remota disponible.
+- Archivo `.env` configurado con IP, puerto y credenciales de la base.
 
 ### Para ejecución local sin Docker
 
-- PHP 8.4 recomendado
-- Composer
-- Extensiones PHP: `pdo_pgsql`, `pgsql`, `mbstring`, `bcmath`, `zip`, `openssl`, `fileinfo`
-- PostgreSQL remoto disponible por Tailscale
+- PHP 8.4 recomendado.
+- Composer.
+- Extensiones PHP: `pdo_pgsql`, `pgsql`, `mbstring`, `bcmath`, `zip`, `openssl`, `fileinfo`.
+- PostgreSQL remoto disponible por Tailscale.
 
 ---
 
-## Configuración del Entorno
+## Variables de Entorno
 
 Crear el archivo `.env` a partir del ejemplo:
 
@@ -373,13 +493,15 @@ Crear el archivo `.env` a partir del ejemplo:
 cp .env.example .env
 ```
 
-Variables principales:
+Configuración principal:
 
 ```env
 APP_NAME=IceFrame
 APP_ENV=local
+APP_KEY=
 APP_DEBUG=true
 APP_URL=http://localhost:8000
+
 APP_LOCALE=es
 APP_TIMEZONE=America/Costa_Rica
 
@@ -392,29 +514,25 @@ DB_PASSWORD=iceframe_dev
 DB_PERSISTENT=true
 
 SESSION_DRIVER=file
+SESSION_LIFETIME=120
 CACHE_STORE=file
 
 REPORTES_URL=http://IP_TAILSCALE_DE_REPORTES:PUERTO
 ```
 
-Puntos importantes:
+Notas importantes:
 
-- `DB_HOST` debe apuntar a la IP Tailscale del servidor de base de datos.
+- `DB_HOST` debe apuntar a la IP Tailscale de la máquina donde corre PostgreSQL.
 - Si la base de datos está en otra máquina, no usar `localhost`.
+- `DB_PORT` debe coincidir con el puerto expuesto por el contenedor PostgreSQL.
 - `REPORTES_URL` puede quedar vacío si el módulo externo de reportes todavía no está activo.
-- `SESSION_DRIVER=file` evita crear tablas de sesión dentro de la base compartida.
+- `SESSION_DRIVER=file` evita depender de tablas de sesión dentro de la base compartida.
 
 ---
 
 ## Instalación y Ejecución con Docker
 
-Desde la carpeta del proyecto Laravel:
-
-```bash
-cd app-inventario
-```
-
-Levantar el contenedor:
+Desde la raíz del proyecto:
 
 ```bash
 docker compose up -d --build
@@ -424,6 +542,12 @@ Ver logs:
 
 ```bash
 docker compose logs -f
+```
+
+Ver contenedores activos:
+
+```bash
+docker compose ps
 ```
 
 Abrir la aplicación:
@@ -443,7 +567,6 @@ docker compose down
 ## Instalación y Ejecución Local
 
 ```bash
-cd app-inventario
 composer install
 cp .env.example .env
 php artisan key:generate
@@ -461,85 +584,100 @@ http://localhost:8000
 
 ---
 
-## Verificación Rápida
+## Verificación de Conectividad
 
-Antes de probar la aplicación, confirmar que la máquina está conectada a Tailscale:
+Confirmar que la máquina está dentro de la red Tailscale:
 
 ```bash
 tailscale status
 ```
 
-Verificar que Laravel puede leer la configuración:
+Comprobar configuración de Laravel:
 
 ```bash
 php artisan about
 ```
 
-Probar que las rutas cargan:
+Listar rutas registradas:
 
 ```bash
 php artisan route:list
 ```
 
-En Docker:
+Ver logs en Docker:
 
 ```bash
-docker compose ps
 docker compose logs -f app
 ```
 
----
+Si la aplicación no conecta a PostgreSQL, revisar:
 
-## Cómo funciona la venta en IceFrame
-
-Cuando el usuario registra una venta, `VentaController` ejecuta una operación atómica. Primero valida los datos de entrada, luego bloquea el producto con `lockForUpdate()`, verifica stock suficiente, registra o reutiliza el cliente, crea la venta, crea el detalle, descuenta el stock y finalmente guarda un movimiento de inventario tipo `Venta`.
-
-```text
-Formulario de venta
-   ↓
-Validación Laravel
-   ↓
-DB::transaction()
-   ↓
-lockForUpdate() sobre producto
-   ↓
-Cliente + Venta + DetalleVenta
-   ↓
-Descuento de stock
-   ↓
-MovimientoInventario(tipo = Venta)
-   ↓
-Confirmación con total vendido
-```
-
-Este flujo evita inconsistencias de stock y mantiene trazabilidad entre ventas y movimientos.
+- Que Tailscale esté activo en ambas máquinas.
+- Que `DB_HOST` sea la IP Tailscale correcta.
+- Que `DB_PORT` coincida con el puerto expuesto por PostgreSQL.
+- Que el contenedor de base de datos esté encendido.
+- Que las credenciales de `.env` coincidan con las configuradas por el Estudiante 2.
 
 ---
 
 ## Exportaciones CSV y JSON
 
-Los módulos principales tienen salida descargable:
+Los módulos principales tienen endpoints de descarga:
 
 | Módulo | CSV | JSON |
-|--------|-----|------|
+|-------|-----|------|
 | Catálogo | `/productos/csv` | `/productos/json?descargar=1` |
 | Movimientos | `/movimientos/csv` | `/movimientos/json?descargar=1` |
 | Resumen de ventas | `/ventas/resumen/csv` | `/ventas/resumen/json?descargar=1` |
 
-Las exportaciones CSV se generan con separador `;` y BOM UTF-8 para facilitar apertura en Excel. Las exportaciones JSON se generan con `JSON_PRETTY_PRINT` y `JSON_UNESCAPED_UNICODE` para que puedan leerse de forma clara.
+Las exportaciones CSV se generan con separador `;` y BOM UTF-8 para facilitar su apertura en Excel. Las exportaciones JSON se generan con formato legible para revisión técnica.
 
 ---
 
 ## Decisiones Técnicas
 
-- **PostgreSQL remoto**: el esquema de negocio vive fuera del contenedor de aplicación, cumpliendo el enfoque distribuido.
-- **Conexión por Tailscale**: se evita exponer la base de datos públicamente.
-- **Transacciones en operaciones críticas**: ventas, hurtos y reposiciones actualizan stock y registran movimientos de forma consistente.
-- **Desactivación lógica**: eliminar un producto normalmente cambia `activo = false` para conservar historial.
-- **Borrado físico restringido**: solo se permite si el producto no tiene ventas asociadas.
-- **Middleware de administrador**: las acciones sensibles no están disponibles para trabajadores.
-- **Exportaciones trazables**: catálogo, ventas y movimientos pueden descargarse en formatos abiertos.
-- **Dashboard con consultas agregadas**: los gráficos se alimentan desde `GraficosService`, separando la lógica de consulta de la vista.
+- **Aplicación separada de la base de datos**: Laravel no depende de una base local; consume PostgreSQL remoto por red privada.
+- **Tailscale**: permite comunicación segura entre máquinas sin publicar la base de datos en Internet.
+- **Docker**: encapsula la aplicación y sus dependencias.
+- **PostgreSQL**: garantiza integridad relacional y soporte para transacciones.
+- **Transacciones**: ventas, hurtos y reposiciones actualizan stock y registran movimientos de forma consistente.
+- **Bloqueo de fila**: las ventas usan `lockForUpdate()` para reducir inconsistencias de stock.
+- **Desactivación lógica**: eliminar normalmente equivale a marcar `activo = false`, conservando historial.
+- **Eliminación física segura**: solo se permite cuando el producto no tiene ventas asociadas.
+- **Middleware de administrador**: protege acciones sensibles.
+- **Exportaciones abiertas**: CSV y JSON facilitan auditoría y entrega académica.
+- **Identidad visual propia**: se implementó una interfaz personalizada con estética azul hielo.
+
+---
+
+## Comandos Útiles
+
+Limpiar cachés de Laravel:
+
+```bash
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan cache:clear
+```
+
+Reconstruir el contenedor:
+
+```bash
+docker compose up -d --build
+```
+
+Reiniciar el contenedor:
+
+```bash
+docker compose restart
+```
+
+Ver logs:
+
+```bash
+docker compose logs -f app
+```
 
 ---
 
@@ -547,13 +685,37 @@ Las exportaciones CSV se generan con separador `;` y BOM UTF-8 para facilitar ap
 
 | Integrante | Rol dentro del sistema |
 |------------|------------------------|
-| Karel González | Aplicación Laravel, interfaz IceFrame, catálogo, ventas, movimientos, exportaciones y conexión con servicios externos. |
-| Juan Diego Sotomayor | Base de datos PostgreSQL, datos de prueba, módulo de reportes e integración por red Tailscale. |
+| Karel González | Aplicación Laravel, interfaz IceFrame, catálogo, ventas, movimientos, exportaciones, Dockerfile de la app y conexión con servicios externos. |
+| Juan Diego Sotomayor | Base de datos PostgreSQL, datos de prueba, persistencia, módulo de reportes e integración por red Tailscale. |
 
 ---
 
 ## Estado del Proyecto
 
-El proyecto cuenta con autenticación, dashboard, catálogo de inventario, detalle de producto, edición, registro de producto, venta simple, reposición, hurto, historial de movimientos, resumen de ventas, exportaciones CSV/JSON y despliegue mediante Docker Compose.
+El proyecto cuenta con:
+
+- Autenticación.
+- Dashboard operativo.
+- Catálogo de inventario.
+- Detalle de producto.
+- Registro y edición de productos.
+- Desactivación y reactivación de productos.
+- Venta simple con descuento de stock.
+- Reposición de stock.
+- Registro de hurto.
+- Historial de movimientos.
+- Resumen de ventas.
+- Exportaciones CSV y JSON.
+- Integración con base PostgreSQL remota.
+- Despliegue mediante Docker Compose.
+- Documentación con capturas y datos exportados.
 
 ---
+
+## Nombre del Repositorio
+
+```text
+proyecto-iceframe-app-inventario
+```
+
+Este nombre identifica que el repositorio corresponde a la aplicación principal de inventario del proyecto IceFrame.
