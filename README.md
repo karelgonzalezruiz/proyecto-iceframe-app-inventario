@@ -2,20 +2,6 @@
   <img src="public/images/brand/iceframe-logo-sidebar.png" alt="Logo de IceFrame Inventory" width="430">
 </p>
 
-<h1 align="center">IceFrame Inventory</h1>
-
-<p align="center">
-  Sistema de inventario distribuido con Laravel, PostgreSQL, Docker y Tailscale.
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Laravel-13-red?style=for-the-badge&logo=laravel" alt="Laravel 13">
-  <img src="https://img.shields.io/badge/PHP-8.4-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.4">
-  <img src="https://img.shields.io/badge/PostgreSQL-remoto-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL remoto">
-  <img src="https://img.shields.io/badge/Docker-contenedor-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
-  <img src="https://img.shields.io/badge/Tailscale-red%20privada-242424?style=for-the-badge&logo=tailscale&logoColor=white" alt="Tailscale">
-</p>
-
 ---
 
 ## Descripción
