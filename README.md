@@ -8,7 +8,7 @@
 
 **IceFrame** es una aplicación web para administrar el inventario de una tienda de productos tecnológicos: drones, cámaras de acción, cámaras 360, accesorios audiovisuales y equipos para creación de contenido.
 
-Este repositorio contiene la **aplicación de inventario del Estudiante 1**, desarrollada en Laravel y ejecutada dentro de un contenedor Docker. La aplicación se conecta a una base de datos PostgreSQL remota ubicada en la máquina del Estudiante 2 mediante una red privada **Tailscale**. Además, permite integrarse con un módulo externo de reportes mediante la variable de entorno `REPORTES_URL`.
+Este repositorio contiene la **aplicación de inventario desarrollada por Karel González**, implementada en Laravel y ejecutada dentro de un contenedor Docker. La aplicación se conecta a una base de datos PostgreSQL remota administrada por **Juan Diego Sotomayor** mediante una red privada **Tailscale**. Además, permite integrarse con un módulo externo de reportes mediante la variable de entorno `REPORTES_URL`.
 
 El sistema permite consultar productos, registrar nuevos artículos, editar información comercial, actualizar stock, registrar ventas, reportar hurtos, registrar reposiciones, consultar movimientos y exportar información en formatos CSV y JSON.
 
@@ -22,11 +22,11 @@ La consigna solicita un sistema de inventario compuesto por servicios independie
 
 | Servicio | Responsable | Descripción |
 |---------|-------------|-------------|
-| Aplicación de inventario | Estudiante 1 | Aplicación web para gestionar productos, stock y operaciones de inventario. |
-| Base de datos | Estudiante 2 | Contenedor PostgreSQL con persistencia mediante volumen Docker. |
-| Sistema de reportes | Estudiante 2 | Servicio independiente conectado a la base de datos por red Docker interna. |
+| Aplicación de inventario | Karel González | Aplicación web para gestionar productos, stock y operaciones de inventario. |
+| Base de datos | Juan Diego Sotomayor | Contenedor PostgreSQL con persistencia mediante volumen Docker. |
+| Sistema de reportes | Juan Diego Sotomayor | Servicio independiente conectado a la base de datos por red Docker interna. |
 
-Este repositorio corresponde a la **aplicación de inventario**. La base de datos y el sistema de reportes se despliegan desde el repositorio o máquina del segundo integrante.
+Este repositorio corresponde a la **aplicación de inventario desarrollada por Karel González**. La base de datos y el sistema de reportes se despliegan desde el repositorio o máquina de **Juan Diego Sotomayor**.
 
 ---
 
@@ -42,7 +42,7 @@ Este repositorio corresponde a la **aplicación de inventario**. La base de dato
 | Leer IP y credenciales desde `.env` | Variables `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`. |
 | Tener Dockerfile propio | `Dockerfile` incluido en la raíz del proyecto. |
 | Exponer puerto accesible por Tailscale | `docker-compose.yml` expone `8000:8000`. |
-| Conectarse a la base del Estudiante 2 | Conexión PostgreSQL mediante IP Tailscale. |
+| Conectarse a la base administrada por Juan Diego Sotomayor | Conexión PostgreSQL mediante IP Tailscale. |
 | Integrarse con reportes | Botón de redirección configurable con `REPORTES_URL`. |
 
 ---
@@ -57,7 +57,7 @@ Laravel + Blade + CSS + JavaScript
    ↓
 Red privada Tailscale
    ↓
-Servidor del Estudiante 2
+Servidor de Juan Diego Sotomayor
 PostgreSQL + módulo de reportes
    ↓
 Persistencia y reportes operativos
@@ -602,7 +602,7 @@ Si la aplicación no conecta a PostgreSQL, revisar:
 - Que `DB_HOST` sea la IP Tailscale correcta.
 - Que `DB_PORT` coincida con el puerto expuesto por PostgreSQL.
 - Que el contenedor de base de datos esté encendido.
-- Que las credenciales de `.env` coincidan con las configuradas por el Estudiante 2.
+- Que las credenciales de `.env` coincidan con las configuradas por Juan Diego Sotomayor.
 
 ---
 
