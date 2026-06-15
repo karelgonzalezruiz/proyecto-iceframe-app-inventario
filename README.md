@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/images/brand/iceframe-logo-sidebar.png" alt="Logo de IceFrame Inventory" width="430">
+  <img src="public/images/brand/iceframe-logo.png" alt="Logo de IceFrame Inventory" width="430">
 </p>
 
 ---
