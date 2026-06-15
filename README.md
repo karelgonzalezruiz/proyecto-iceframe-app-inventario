@@ -6,7 +6,7 @@
 
 ## Descripción
 
-**IceFrame Inventory** es una aplicación web para administrar el inventario de una tienda de productos tecnológicos: drones, cámaras de acción, cámaras 360, accesorios audiovisuales y equipos para creación de contenido.
+**IceFrame** es una aplicación web para administrar el inventario de una tienda de productos tecnológicos: drones, cámaras de acción, cámaras 360, accesorios audiovisuales y equipos para creación de contenido.
 
 Este repositorio contiene la **aplicación de inventario del Estudiante 1**, desarrollada en Laravel y ejecutada dentro de un contenedor Docker. La aplicación se conecta a una base de datos PostgreSQL remota ubicada en la máquina del Estudiante 2 mediante una red privada **Tailscale**. Además, permite integrarse con un módulo externo de reportes mediante la variable de entorno `REPORTES_URL`.
 
